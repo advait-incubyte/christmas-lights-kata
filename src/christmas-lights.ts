@@ -1,14 +1,43 @@
-export const christmasLights = (mode: string, startPoint: string, endPoint: string) => {
-  const lights = Array.from({length: 1000}, (): boolean[] => Array(1000).fill(false));
-  const [startX, startY] = startPoint.split(',').map(Number);
-  const [endX, endY] = endPoint.split(',').map(Number);
+export default class ChristmasLights {
+  private readonly lights: boolean[][];
 
-  for (let x = startX; x <= endX; x++) {
-    for (let y = startY; y <= endY; y++) {
-      if (mode === 'ON')
-        lights[x][y] = true;
+  constructor() {
+    this.lights = Array.from({ length: 1000 }, (): boolean[] =>
+      Array(1000).fill(false),
+    );
+  }
+
+  public turnOn(startPoint: string, endPoint: string) {
+    const { startX, startY, endX, endY } = this.extractPoints(
+      startPoint,
+      endPoint,
+    );
+
+    for (let x = startX; x <= endX; x++) {
+      for (let y = startY; y <= endY; y++) {
+        this.lights[x][y] = true;
+      }
     }
   }
 
-  return lights;
+  public toggle(startPoint: string, endPoint: string) {
+    const [startX, startY] = startPoint.split(",").map(Number);
+    const [endX, endY] = endPoint.split(",").map(Number);
+
+    for (let x = startX; x <= endX; x++) {
+      for (let y = startY; y <= endY; y++) {
+        this.lights[x][y] = !this.lights[x][y];
+      }
+    }
+  }
+
+  public getLightAt(x: number, y: number): boolean {
+    return this.lights[x][y];
+  }
+
+  private extractPoints(startPoint: string, endPoint: string) {
+    const [startX, startY] = startPoint.split(",").map(Number);
+    const [endX, endY] = endPoint.split(",").map(Number);
+    return { startX, startY, endX, endY };
+  }
 }
