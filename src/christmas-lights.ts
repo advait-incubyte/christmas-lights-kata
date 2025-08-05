@@ -1,3 +1,9 @@
+const ACTIONS = {
+  TURN_ON: 'turn on',
+  TURN_OFF: 'turn off',
+  TOGGLE: 'toggle',
+} as const;
+
 export default class ChristmasLights {
   private readonly lights: boolean[][];
 
@@ -11,7 +17,28 @@ export default class ChristmasLights {
     return this.lights[x][y];
   }
 
-  public turnOn(startPoint: string, endPoint: string) {
+  public execute(instruction: string) {
+    const match = instruction.match(
+      /^(turn on|turn off|toggle) (\d+,\d+) through (\d+,\d+)$/,
+    );
+    const [, action, startPoint, endPoint] = match!;
+    switch (action) {
+      case ACTIONS.TURN_ON:
+        return this.turnOn(startPoint, endPoint);
+      case ACTIONS.TURN_OFF:
+        return this.turnOff(startPoint, endPoint);
+      case ACTIONS.TOGGLE:
+        return this.toggle(startPoint, endPoint);
+    }
+  }
+
+  getTotalLightsOn() {
+    return this.lights.reduce((total, row) => {
+      return total + row.filter((light) => light).length;
+    }, 0);
+  }
+
+  private turnOn(startPoint: string, endPoint: string) {
     const { startX, startY, endX, endY } = this.extractPoints(
       startPoint,
       endPoint,
@@ -24,7 +51,19 @@ export default class ChristmasLights {
     }
   }
 
-  public toggle(startPoint: string, endPoint: string) {
+  private turnOff(startPoint: string, endPoint: string) {
+    const { startX, startY, endX, endY } = this.extractPoints(
+      startPoint,
+      endPoint,
+    );
+    for (let x = startX; x <= endX; x++) {
+      for (let y = startY; y <= endY; y++) {
+        this.lights[x][y] = false;
+      }
+    }
+  }
+
+  private toggle(startPoint: string, endPoint: string) {
     const { startX, startY, endX, endY } = this.extractPoints(
       startPoint,
       endPoint,
@@ -33,18 +72,6 @@ export default class ChristmasLights {
     for (let x = startX; x <= endX; x++) {
       for (let y = startY; y <= endY; y++) {
         this.lights[x][y] = !this.lights[x][y];
-      }
-    }
-  }
-
-  public turnOff(startPoint: string, endPoint: string) {
-    const { startX, startY, endX, endY } = this.extractPoints(
-      startPoint,
-      endPoint,
-    );
-    for (let x = startX; x <= endX; x++) {
-      for (let y = startY; y <= endY; y++) {
-        this.lights[x][y] = false;
       }
     }
   }
