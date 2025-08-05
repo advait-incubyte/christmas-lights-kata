@@ -10,5 +10,13 @@ describe('Christmas Lights', () => {
     expect(christmasLights.getLightAt(500, 500)).toBe(true);
   });
 
-  it('should not light up lights for 0,0 to 999,999 when mode is OFF', () => {});
+  it('should not light up lights for 0,0 to 999,999 when mode is OFF', () => {
+    const christmasLights = new ChristmasLights();
+    christmasLights.turnOn('0,0', '999,999');
+    christmasLights.toggle('0,0', '999,0');
+    expect(christmasLights.getLightAt(0, 0)).toBe(false);
+    expect(christmasLights.getLightAt(500, 0)).toBe(false);
+    expect(christmasLights.getLightAt(999, 0)).toBe(false);
+    expect(christmasLights.getLightAt(500, 500)).toBe(true);
+  });
 });
