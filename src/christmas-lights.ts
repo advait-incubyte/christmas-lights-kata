@@ -5,15 +5,15 @@ const ACTIONS = {
 } as const;
 
 export default class ChristmasLights {
-  private readonly lights: boolean[][];
+  private readonly lights: number[][];
 
   constructor() {
-    this.lights = Array.from({ length: 1000 }, (): boolean[] =>
-      Array(1000).fill(false),
+    this.lights = Array.from({ length: 1000 }, (): number[] =>
+      Array(1000).fill(0),
     );
   }
 
-  public getLightAt(x: number, y: number): boolean {
+  public getLightAt(x: number, y: number): number {
     return this.lights[x][y];
   }
 
@@ -21,7 +21,7 @@ export default class ChristmasLights {
     const match = instruction.match(
       /^(turn on|turn off|toggle) (\d+,\d+) through (\d+,\d+)$/,
     );
-    const [, action, startPoint, endPoint] = match!;
+    const [_, action, startPoint, endPoint] = match!;
     switch (action) {
       case ACTIONS.TURN_ON:
         return this.turnOn(startPoint, endPoint);
@@ -34,7 +34,7 @@ export default class ChristmasLights {
 
   getTotalLightsOn() {
     return this.lights.reduce((total, row) => {
-      return total + row.filter((light) => light).length;
+      return total + row.reduce((rowTotal, light) => rowTotal + light, 0);
     }, 0);
   }
 
@@ -46,7 +46,7 @@ export default class ChristmasLights {
 
     for (let x = startX; x <= endX; x++) {
       for (let y = startY; y <= endY; y++) {
-        this.lights[x][y] = true;
+        this.lights[x][y] += 1;
       }
     }
   }
@@ -58,7 +58,7 @@ export default class ChristmasLights {
     );
     for (let x = startX; x <= endX; x++) {
       for (let y = startY; y <= endY; y++) {
-        this.lights[x][y] = false;
+        this.lights[x][y] = Math.max(0, this.lights[x][y] - 1);
       }
     }
   }
@@ -71,7 +71,7 @@ export default class ChristmasLights {
 
     for (let x = startX; x <= endX; x++) {
       for (let y = startY; y <= endY; y++) {
-        this.lights[x][y] = !this.lights[x][y];
+        this.lights[x][y] += 2;
       }
     }
   }
